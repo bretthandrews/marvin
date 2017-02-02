@@ -544,10 +544,18 @@ class Maps(marvin.core.core.MarvinToolsClass):
         map_1 = self.getMap(property_name, channel=channel_1)
         map_2 = self.getMap(property_name, channel=channel_2)
 
-        map_1.value /= map_2.value
+        map_ratio = self.getMap(property_name, channel=channel_1)
 
-        # TODO: do the error propogation (BHA)
-        map_1.ivar = None
+        map_ratio.value /= map_2.value
+
+        # R = x/y
+        # sigR = 1 / sqrt(ivarR)
+        # sigR / |R| = sigX / |X| + sigY / |Y|
+        # 1 / sqrt(ivarR) / |R| = 1 / sqrt(ivarX) / |X| + 1 / sqrt(ivarY) / |Y|
+        # sqrt(ivarR) = 1 / |R| * (1 / (1 / sqrt(ivarX) / |X| + 1 / sqrt(ivarY) / |Y|))
+        # ivarR = R**-2 / (1 / sqrt(ivarX) / |X| + 1 / sqrt(ivarY) / |Y|) **2
+        map_1.ivar = (map_1.value**-2 / (1 / np.sqrt(map_1.ivar) / np.abs(map_1.value) +
+                                         1 / np.sqrt(map_2.ivar) / np.abs(map_2.value))**2)
 
         map_1.mask &= map_2.mask
 
