@@ -557,6 +557,16 @@ class Maps(marvin.core.core.MarvinToolsClass):
         map_1.ivar = (map_1.value**-2 / (1 / np.sqrt(map_1.ivar) / np.abs(map_1.value) +
                                          1 / np.sqrt(map_2.ivar) / np.abs(map_2.value))**2)
 
+        # Kyle's example code (probably better)
+        #
+        # Two maps: map1, map2
+        # with ivars: map1_ivar, map2_ivar
+        # _ratio = np.ma.divide(map1, map2)
+        # map1_pivar = np.ma.power(np.square(map1) * map1_ivar, -1)
+        # map2_pivar = np.ma.power(np.square(map2) * map2_ivar, -1)
+        # ratio_ivar = np.ma.power(np.square(_ratio) * (map1_pivar + map2_pivar), -1).filled(0.0)
+        # ratio = _ratio.filled(0.0)
+
         map_1.mask &= map_2.mask
 
         map_1.channel = '{0}/{1}'.format(channel_1, channel_2)
